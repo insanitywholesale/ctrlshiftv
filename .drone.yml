@@ -1,0 +1,10 @@
+kind: pipeline
+name: default
+type: kubernetes
+
+steps:
+  - name: ctrlshiftv
+    image: golang
+    commands:
+      - go get -v
+      - go build -v
