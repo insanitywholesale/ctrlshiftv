@@ -1,3 +1,3 @@
 # ctrlshiftv
 
-paste service written in Go
+paste microservice written in Go
