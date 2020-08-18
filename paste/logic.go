@@ -5,6 +5,7 @@ import (
 	errs "github.com/pkg/errors"
 	"github.com/teris-io/shortid"
 	"gopkg.in/dealancer/validate.v2"
+	//"strconv"
 	"time"
 )
 
@@ -28,7 +29,8 @@ func (p *pasteService) Find(code string) (*Paste, error) {
 }
 
 func (p *pasteService) Store(paste *Paste) error {
-	if err := validate.Validate(paste); err != nil {
+	err := validate.Validate(paste)
+	if err != nil {
 		return errs.Wrap(ErrPasteInvalid, "service.Paste")
 	}
 	paste.Code = shortid.MustGenerate()

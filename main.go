@@ -1,11 +1,11 @@
 package main
 
 import (
-	mockrepo "ctrlshiftv/repo/mock"
-	//psql "ctrlshiftv/repo/postgres"
-	//sqlite "ctrlshiftv/repo/postgres"
 	h "ctrlshiftv/api"
 	"ctrlshiftv/paste"
+	mockrepo "ctrlshiftv/repo/mock"
+	psql "ctrlshiftv/repo/postgres"
+	sqlite "ctrlshiftv/repo/sqlite"
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -17,18 +17,6 @@ import (
 )
 
 func main() {
-	//sample of connecting to postgres -- useless since psql implementation not done
-	//repo, err := pr.NewPostgresRepo("postgres://tester:Apasswd@localhost/test?sslmode=disable")
-	//repo, err := mockrepo.NewMockRepo()
-	//p, err := repo.Find("1234")
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//fmt.Printf("code 1234's content:\n------------------------\n	%s\n------------------------\n", p.Content)
-	//fmt.Println("got repo", repo)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
 	StartService()
 	os.Exit(0)
 }
@@ -41,12 +29,43 @@ func httpPort() string {
 	return fmt.Sprintf(":%s", port)
 }
 
-func StartService() {
-	repo, err := mockrepo.NewMockRepo()
-	if err != nil {
-		log.Fatal(err)
+func chooseRepo() paste.PasteRepo {
+	switch os.Getenv("URL_DB") {
+	case "sqlite":
+		sqliteURL := os.Getenv("SQLITE_URL")
+		repo, err := sqlite.NewSQLiteRepo(sqliteURL)
+		if err != nil {
+			log.Fatal(err)
+		}
+		return repo
+	case "postgres":
+		//postgresURL := os.Getenv("POSTGRES_URL")
+		//postgresUser := os.Getenv("POSTGRES_USER")
+		//postgresPassword := os.Getenv("POSTGRES_PASSWORD")
+		//postgresHost := os.Getenv("POSTGRES_HOST")
+		//postgresDB := os.Getenv("POSTGRES_DB")
+		// Switch to using the above at some point
+		postgresURI := "postgres://tester:Apasswd@localhost/test?sslmode=disable"
+		if os.Getenv("POSTGRES_URI") != "" {
+			postgresURI = os.Getenv("POSTGRES_URI")
+		}
+		repo, err := psql.NewPostgresRepo(postgresURI)
+		if err != nil {
+			log.Fatal(err)
+		}
+		return repo
+	default:
+		repo, err := mockrepo.NewMockRepo()
+		if err != nil {
+			log.Fatal(err)
+		}
+		return repo
 	}
+	return nil
+}
 
+func StartService() {
+	repo := chooseRepo()
 	service := paste.NewPasteService(repo)
 	handler := h.NewHandler(service)
 

@@ -5,5 +5,5 @@
 - gRPC for codes
 - write "frontend"
 - implement postgres Find and Store
-- implement sqlite
+- implement sqlite Find and Store
 - rethinkdb repository option

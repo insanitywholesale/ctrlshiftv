@@ -4,6 +4,7 @@ import (
 	"ctrlshiftv/paste"
 	bs "ctrlshiftv/serializer/bare"
 	js "ctrlshiftv/serializer/json"
+	plain "ctrlshiftv/serializer/plain"
 	"github.com/go-chi/chi"
 	"github.com/pkg/errors"
 	"io/ioutil"
@@ -39,10 +40,18 @@ func setupResponse(w http.ResponseWriter, contentType string, body []byte, statu
 }
 
 func (h *handler) serializer(contentType string) paste.PasteSerializer {
-	if contentType == "application/octet-stream" {
+	switch contentType {
+	case "application/json":
+		return &js.Paste{}
+	case "application/octet-stream":
 		return &bs.Paste{}
+	case "application/x-www-form-urlencoded":
+		return &plain.Paste{}
+	case "text/plain":
+		return &plain.Paste{}
+	default:
+		return nil
 	}
-	return &js.Paste{}
 }
 
 func (h *handler) Get(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +64,9 @@ func (h *handler) Get(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, paste.Code, http.StatusMovedPermanently)
+	//http.Redirect(w, r, paste.Code, http.StatusMovedPermanently)
+	// TODO: change this to output the full object in json/msgpack too
+	setupResponse(w, r.Header.Get("Content-Type"), []byte(paste.Content + "\n"), http.StatusOK)
 }
 
 func (h *handler) Post(w http.ResponseWriter, r *http.Request) {
