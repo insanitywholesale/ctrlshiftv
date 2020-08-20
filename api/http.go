@@ -90,6 +90,7 @@ func (h *handler) Post(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+	// TODO: add gRPC call to urlshort
 	responseBody, err := h.serializer(contentType).Encode(paste)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
