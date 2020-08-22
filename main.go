@@ -83,11 +83,11 @@ func StartService() {
 	})
 	fmt.Println("shortlink", shortLink)
 	if err != nil {
-		log.Fatalf("Failed to get player data: %v", e)
+		log.Fatalf("Failed to get short link code: %v", e)
 	}
 
 	// panic so the following don't run
-	panic("hey")
+	os.Exit(0)
 
 	service := paste.NewPasteService(repo)
 	handler := h.NewHandler(service)
