@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	h "ctrlshiftv/api"
 	"ctrlshiftv/paste"
+	protos "ctrlshiftv/proto/shorten"
 	mockrepo "ctrlshiftv/repo/mock"
 	psql "ctrlshiftv/repo/postgres"
 	sqlite "ctrlshiftv/repo/sqlite"
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"google.golang.org/grpc"
 	"log"
 	"net/http"
 	"os"
@@ -66,6 +69,26 @@ func chooseRepo() paste.PasteRepo {
 
 func StartService() {
 	repo := chooseRepo()
+
+	sAddress := "localhost:4040"
+	conn, e := grpc.Dial(sAddress, grpc.WithInsecure())
+	if e != nil {
+		log.Fatalf("Failed to connect to server %v", e)
+	}
+	defer conn.Close()
+
+	client := protos.NewShortenRequestClient(conn)
+	shortLink, err := client.GetShortURL(context.Background(), &protos.LongLink{
+		Link: "http://example.com",
+	})
+	fmt.Println("shortlink", shortLink)
+	if err != nil {
+		log.Fatalf("Failed to get player data: %v", e)
+	}
+
+	// panic so the following don't run
+	panic("hey")
+
 	service := paste.NewPasteService(repo)
 	handler := h.NewHandler(service)
 

@@ -66,7 +66,7 @@ func (h *handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	//http.Redirect(w, r, paste.Code, http.StatusMovedPermanently)
 	// TODO: change this to output the full object in json/msgpack too
-	setupResponse(w, r.Header.Get("Content-Type"), []byte(paste.Content + "\n"), http.StatusOK)
+	setupResponse(w, r.Header.Get("Content-Type"), []byte(paste.Content+"\n"), http.StatusOK)
 }
 
 func (h *handler) Post(w http.ResponseWriter, r *http.Request) {
