@@ -20,7 +20,7 @@ import (
 )
 
 func httpPort() string {
-	port := "8000"
+	port := "8080"
 	if os.Getenv("PORT") != "" {
 		port = os.Getenv("PORT")
 	}
