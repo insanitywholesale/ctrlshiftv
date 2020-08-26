@@ -19,11 +19,6 @@ import (
 	"syscall"
 )
 
-func main() {
-	StartService()
-	os.Exit(0)
-}
-
 func httpPort() string {
 	port := "8000"
 	if os.Getenv("PORT") != "" {
@@ -48,7 +43,7 @@ func chooseRepo() paste.PasteRepo {
 		//postgresHost := os.Getenv("POSTGRES_HOST")
 		//postgresDB := os.Getenv("POSTGRES_DB")
 		// Switch to using the above at some point
-		postgresURI := "postgres://tester:Apasswd@localhost/test?sslmode=disable"
+		postgresURI := "postgres://tester:Apasswd@localhost?sslmode=disable"
 		if os.Getenv("POSTGRES_URI") != "" {
 			postgresURI = os.Getenv("POSTGRES_URI")
 		}
@@ -67,9 +62,7 @@ func chooseRepo() paste.PasteRepo {
 	return nil
 }
 
-func StartService() {
-	repo := chooseRepo()
-
+func startGRPC() {
 	sAddress := "localhost:4040"
 	conn, e := grpc.Dial(sAddress, grpc.WithInsecure())
 	if e != nil {
@@ -79,15 +72,19 @@ func StartService() {
 
 	client := protos.NewShortenRequestClient(conn)
 	shortLink, err := client.GetShortURL(context.Background(), &protos.LongLink{
-		Link: "http://example.com",
+		Link: "http://distro.watch",
 	})
 	fmt.Println("shortlink", shortLink)
 	if err != nil {
 		log.Fatalf("Failed to get short link code: %v", e)
 	}
 
-	// panic so the following don't run
-	os.Exit(0)
+	// exit so the following don't run
+	//os.Exit(0)
+}
+
+func startHTTP() {
+	repo := chooseRepo()
 
 	service := paste.NewPasteService(repo)
 	handler := h.NewHandler(service)
@@ -103,7 +100,7 @@ func StartService() {
 
 	errs := make(chan error, 2)
 	go func() {
-		fmt.Println("Listening on port :8000")
+		fmt.Printf("Listening on port %s\n", httpPort())
 		errs <- http.ListenAndServe(httpPort(), r)
 
 	}()
@@ -114,5 +111,9 @@ func StartService() {
 		errs <- fmt.Errorf("%s", <-c)
 	}()
 
-	fmt.Printf("Terminated %s", <-errs)
+	fmt.Printf("Terminated %s\n", <-errs)
+}
+
+func main() {
+	startHTTP()
 }
