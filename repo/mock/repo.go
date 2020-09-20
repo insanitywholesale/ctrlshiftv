@@ -2,7 +2,6 @@ package mock
 
 import (
 	"ctrlshiftv/paste"
-	//"fmt"
 	"errors"
 )
 
@@ -38,7 +37,9 @@ func (r *mockRepo) Find(code string) (*paste.Paste, error) {
 			return paste, nil
 		}
 	}
-	return nil, errors.New("Paste Not Found") //fmt.Errorf("paste with code %s was not found", code)
+	return nil, errors.New("Paste Not Found")
+	// Alternate way to do the above
+	//fmt.Errorf("paste with code %s was not found", code)
 }
 
 func (r *mockRepo) Store(pp *paste.Paste) error {

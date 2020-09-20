@@ -10,7 +10,8 @@ type Paste struct{}
 
 func (p *Paste) Decode(input []byte) (*paste.Paste, error) {
 	paste := &paste.Paste{}
-	if err := json.Unmarshal(input, paste); err != nil {
+	err := json.Unmarshal(input, paste)
+	if err != nil {
 		return nil, errors.Wrap(err, "serializer.Paste.Decode")
 	}
 	return paste, nil

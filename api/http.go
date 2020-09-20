@@ -41,13 +41,18 @@ func setupResponse(w http.ResponseWriter, contentType string, body []byte, statu
 
 func (h *handler) serializer(contentType string) paste.PasteSerializer {
 	switch contentType {
+	// json
 	case "application/json":
 		return &js.Paste{}
+	// bare
 	case "application/octet-stream":
 		return &bs.Paste{}
+	// plain
+	case "text/plain":
+		return &plain.Paste{}
 	case "application/x-www-form-urlencoded":
 		return &plain.Paste{}
-	case "text/plain":
+	case "multipart/form-data":
 		return &plain.Paste{}
 	default:
 		return nil

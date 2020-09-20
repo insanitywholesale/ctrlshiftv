@@ -37,15 +37,23 @@ func chooseRepo() paste.PasteRepo {
 		}
 		return repo
 	case "postgres":
-		//postgresURL := os.Getenv("POSTGRES_URL")
-		//postgresUser := os.Getenv("POSTGRES_USER")
-		//postgresPassword := os.Getenv("POSTGRES_PASSWORD")
-		//postgresHost := os.Getenv("POSTGRES_HOST")
-		//postgresDB := os.Getenv("POSTGRES_DB")
-		// Switch to using the above at some point
 		postgresURI := "postgres://tester:Apasswd@localhost?sslmode=disable"
 		if os.Getenv("POSTGRES_URI") != "" {
 			postgresURI = os.Getenv("POSTGRES_URI")
+		}
+		if os.Getenv("POSTGRES_URI") == "" {
+			postgresUser := "tester"
+			postgresUser = os.Getenv("POSTGRES_USER")
+			postgresPassword := "passwd"
+			postgresPassword = os.Getenv("POSTGRES_PASSWORD")
+			postgresHost := "localhost"
+			postgresHost = os.Getenv("POSTGRES_HOST")
+			postgresDB := "test"
+			postgresDB = os.Getenv("POSTGRES_DB")
+			// Switch to using the above at some point
+			postgresConnStr := fmt.Sprintf("postgres://%d:%d@%d/%d?sslmode=disable", postgresUser, postgresPassword, postgresHost, postgresDB)
+			postgresURI = postgresConnStr
+			log.Println("postgresURI:", postgresURI)
 		}
 		repo, err := psql.NewPostgresRepo(postgresURI)
 		if err != nil {
@@ -63,6 +71,7 @@ func chooseRepo() paste.PasteRepo {
 }
 
 func startGRPC() {
+	// TODO: change to optionally use env var
 	sAddress := "localhost:4040"
 	conn, e := grpc.Dial(sAddress, grpc.WithInsecure())
 	if e != nil {
@@ -74,7 +83,7 @@ func startGRPC() {
 	shortLink, err := client.GetShortURL(context.Background(), &protos.LongLink{
 		Link: "http://distro.watch",
 	})
-	fmt.Println("shortlink", shortLink)
+	log.Println("shortlink", shortLink)
 	if err != nil {
 		log.Fatalf("Failed to get short link code: %v", e)
 	}
@@ -115,5 +124,6 @@ func startHTTP() {
 }
 
 func main() {
-	startHTTP()
+	go startGRPC()
+	defer startHTTP()
 }
