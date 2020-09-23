@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-func mmain() {
+func notmain() {
 	sAddress := "localhost:4040"
 	conn, e := grpc.Dial(sAddress, grpc.WithInsecure())
 	if e != nil {
