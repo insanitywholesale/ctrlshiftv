@@ -1,4 +1,5 @@
 # things to do
+- actually implement the call(s) to urlshort
 - env var for grpc server URL/port/address
 - remove the extras, implement only the interface to send pastes
 - the above possibly requires a whole lot of rework of the structs

@@ -73,13 +73,22 @@ func chooseRepo() paste.PasteRepo {
 func startGRPC() {
 	// TODO: change to optionally use env var
 	sAddress := "localhost:4040"
-	conn, e := grpc.Dial(sAddress, grpc.WithInsecure())
+	conn, e := grpc.Dial(
+		sAddress,
+		grpc.WithInsecure(),
+	)
+	// Can help with connection is closing errors sometimes
+	//grpc.FailOnNonTempDialError(true),
+	//gr	grpc.WithBlock(),
+	//gr)
 	if e != nil {
 		log.Fatalf("Failed to connect to server %v", e)
 	}
-	defer conn.Close()
+	// makes passing the connection fail so it's commented out for now
+	//defer conn.Close()
 
 	client := protos.NewShortenRequestClient(conn)
+	paste.SaveConn(conn)
 	shortLink, err := client.GetShortURL(context.Background(), &protos.LongLink{
 		Link: "http://distro.watch",
 	})
@@ -87,9 +96,6 @@ func startGRPC() {
 	if err != nil {
 		log.Fatalf("Failed to get short link code: %v", e)
 	}
-
-	// exit so the following don't run
-	//os.Exit(0)
 }
 
 func startHTTP() {
