@@ -8,7 +8,7 @@ start urlshort first, start ctrlshiftv after that and then do one of the followi
 
 when json encoded:
 ```bash
-curl --header "Content-Type: application/json" -d '{"content": "some paste"}' http://localhost:8000/
+curl --header "Content-Type: application/json" -d '{"content": "some paste"}' http://localhost:8080/
 ```
 
 when plain text from stdin:
@@ -27,7 +27,7 @@ run with `go run main.go` and in a different terminal send data to it
 
 with curl:
 ```bash
-curl --header "Content-Type: application/json" -d '{"content": "mypaste"}' http://localhost:8000/
+curl --header "Content-Type: application/json" -d '{"content": "mypaste"}' http://localhost:8080/
 ```
 
 which should yeild a response like below:
@@ -37,7 +37,7 @@ which should yeild a response like below:
 
 and then view the contents with:
 ```bash
-curl http://localhost:8000/297ZHGHMg
+curl http://localhost:8080/297ZHGHMg
 ```
 
 which should return:
