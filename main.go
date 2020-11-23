@@ -88,7 +88,8 @@ func startGRPC() {
 	//defer conn.Close()
 
 	client := protos.NewShortenRequestClient(conn)
-	paste.SaveConn(conn)
+	paste.SaveClient(client)
+	//paste.SaveConn(conn)
 	shortLink, err := client.GetShortURL(context.Background(), &protos.LongLink{
 		Link: "http://distro.watch",
 	})

@@ -26,7 +26,10 @@ type handler struct {
 	pasteService paste.PasteService
 }
 
+var pasteboi paste.PasteService
+
 func NewHandler(pasteService paste.PasteService) PasteHandler {
+	pasteboi = pasteService
 	return &handler{pasteService: pasteService}
 }
 
@@ -95,7 +98,10 @@ func (h *handler) Post(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-	// TODO: add gRPC call to urlshort
+	// TODO: add PROPER gRPC call to urlshort
+	// following is just a demo, need to integrate properly
+	result := pasteboi.MakeShortURL("whatev")
+	log.Println("result:", result)
 	responseBody, err := h.serializer(contentType).Encode(paste)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

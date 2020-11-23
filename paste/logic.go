@@ -21,10 +21,29 @@ type pasteService struct {
 	pasteRepo PasteRepo
 }
 
+var grpclient protos.ShortenRequestClient
+
+func SaveClient(client protos.ShortenRequestClient) {
+	grpclient = client
+}
+
+//TODO: probably remove this since we can access the client now
 var grpconn *grpc.ClientConn
 
 func SaveConn(conn *grpc.ClientConn) {
 	grpconn = conn
+}
+
+func (p *pasteService) MakeShortURL(url string) string { //*protos.ShortLink {
+	shortLink, err := grpclient.GetShortURL(context.Background(), &protos.LongLink{
+		Link: url,
+	})
+	if err != nil {
+		log.Println("SaveClient error:", err)
+	}
+	//TODO: remove ignore thing
+	log.Println("IGNORE shortlink", shortLink)
+	return shortLink.Link
 }
 
 func NewPasteService(pasteRepo PasteRepo) PasteService {
@@ -43,7 +62,8 @@ func (p *pasteService) Store(paste *Paste) error {
 	shortLink, err := client.GetShortURL(context.Background(), &protos.LongLink{
 		Link: "https://distro.watch",
 	})
-	log.Println("shortlink", shortLink)
+	//TODO: remove ignore thing
+	log.Println("IGNORE shortlink", shortLink)
 	if err != nil {
 		log.Fatalf("Failed to get short link code: %v", err)
 	}
