@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	//"context"
 	h "ctrlshiftv/api"
 	"ctrlshiftv/paste"
 	protos "ctrlshiftv/proto/shorten"
@@ -89,14 +89,7 @@ func startGRPC() {
 
 	client := protos.NewShortenRequestClient(conn)
 	paste.SaveClient(client)
-	//paste.SaveConn(conn)
-	shortLink, err := client.GetShortURL(context.Background(), &protos.LongLink{
-		Link: "http://distro.watch",
-	})
-	log.Println("shortlink", shortLink)
-	if err != nil {
-		log.Fatalf("Failed to get short link code: %v", e)
-	}
+	paste.SaveConn(conn)
 }
 
 func startHTTP() {

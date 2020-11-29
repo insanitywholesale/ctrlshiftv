@@ -57,19 +57,7 @@ func (p *pasteService) Find(code string) (*Paste, error) {
 }
 
 func (p *pasteService) Store(paste *Paste) error {
-	// this works now so better fix functionality
-	client := protos.NewShortenRequestClient(grpconn)
-	shortLink, err := client.GetShortURL(context.Background(), &protos.LongLink{
-		Link: "https://distro.watch",
-	})
-	//TODO: remove ignore thing
-	log.Println("IGNORE shortlink", shortLink)
-	if err != nil {
-		log.Fatalf("Failed to get short link code: %v", err)
-	}
-	// see previous comment
-
-	err = validate.Validate(paste)
+	err := validate.Validate(paste)
 	if err != nil {
 		return errs.Wrap(ErrPasteInvalid, "service.Paste")
 	}

@@ -100,8 +100,10 @@ func (h *handler) Post(w http.ResponseWriter, r *http.Request) {
 	}
 	// TODO: add PROPER gRPC call to urlshort
 	// following is just a demo, need to integrate properly
-	result := pasteboi.MakeShortURL("whatev")
-	log.Println("result:", result)
+	// TODO: find way to automatically determine baseurl
+	myurl := "http://localhost:8080/" + paste.Code
+	result := pasteboi.MakeShortURL(myurl)
+	log.Println("see paste:", "http://localhost:8000/"+result)
 	responseBody, err := h.serializer(contentType).Encode(paste)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
