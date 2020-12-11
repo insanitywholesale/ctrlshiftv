@@ -1,4 +1,5 @@
 # things to do
+- fix regression in commit 285f038c922c1634684952ef042351d291fdeeaf
 - actually implement the call(s) to urlshort
 - gRPC for codes
 - env var for grpc server URL/port/address
