@@ -51,19 +51,14 @@ func (h *handler) serializer(contentType string) paste.PasteSerializer {
 	case "application/octet-stream":
 		return &bs.Paste{}
 	// plain
-	case "text/plain":
-		return &plain.Paste{}
-	case "application/x-www-form-urlencoded":
-		return &plain.Paste{}
-	case "multipart/form-data":
-		return &plain.Paste{}
 	default:
-		return nil
+		return &plain.Paste{}
 	}
 }
 
 func (h *handler) Get(w http.ResponseWriter, r *http.Request) {
 	code := chi.URLParam(r, "code")
+	contentType := r.Header.Get("Content-Type")
 	paste, err := h.pasteService.Find(code)
 	if err != nil {
 		if errors.Cause(err) == ErrPasteNotFound {
@@ -74,12 +69,13 @@ func (h *handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	//http.Redirect(w, r, paste.Code, http.StatusMovedPermanently)
 	// TODO: change this to output the full object in json/msgpack too
-	encodedPaste, err1 := h.serializer(r.Header.Get("Content-Type")).Encode(paste)
+	testpaste := h.serializer(contentType)
+	log.Println(testpaste)
+	encodedPaste, err1 := h.serializer(contentType).Encode(paste)
 	if err1 != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 
-	//setupResponse(w, r.Header.Get("Content-Type"), []byte(paste.Content+"\n"), http.StatusOK)
 	setupResponse(w, r.Header.Get("Content-Type"), encodedPaste, http.StatusOK)
 }
 
@@ -107,7 +103,7 @@ func (h *handler) Post(w http.ResponseWriter, r *http.Request) {
 	// TODO: add PROPER gRPC call to urlshort
 	// following is just a demo, need to integrate properly
 	// TODO: find way to automatically determine baseurl
-	myurl := "http://localhost:8080/" + paste.Code
+	myurl := "http://" + r.Host + "/" + paste.Code
 	result := pasteboi.MakeShortURL(myurl)
 	log.Println("see paste:", "http://localhost:8000/"+result)
 	responseBody, err := h.serializer(contentType).Encode(paste)
