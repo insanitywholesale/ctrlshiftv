@@ -12,6 +12,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/teris-io/shortid v0.0.0-20201117134242-e59966efd125
 	github.com/vmihailenco/msgpack v4.0.4+incompatible
+	github.com/vmihailenco/msgpack/v5 v5.1.4
 	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b // indirect
 	golang.org/x/sys v0.0.0-20201126233918-771906719818 // indirect
 	golang.org/x/text v0.3.4 // indirect
