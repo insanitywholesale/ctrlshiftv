@@ -69,8 +69,7 @@ func (h *handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	//http.Redirect(w, r, paste.Code, http.StatusMovedPermanently)
 	// TODO: change this to output the full object in json/msgpack too
-	testpaste := h.serializer(contentType)
-	log.Println(testpaste)
+	//testpaste := h.serializer(contentType)
 	encodedPaste, err1 := h.serializer(contentType).Encode(paste)
 	if err1 != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

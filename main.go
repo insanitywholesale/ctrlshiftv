@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"context"
 	h "ctrlshiftv/api"
 	"ctrlshiftv/paste"
 	protos "ctrlshiftv/proto/shorten"
@@ -18,14 +17,6 @@ import (
 	"os/signal"
 	"syscall"
 )
-
-func httpPort() string {
-	port := "8080"
-	if os.Getenv("PORT") != "" {
-		port = os.Getenv("PORT")
-	}
-	return fmt.Sprintf(":%s", port)
-}
 
 func chooseRepo() paste.PasteRepo {
 	switch os.Getenv("URL_DB") {
@@ -72,8 +63,11 @@ func chooseRepo() paste.PasteRepo {
 
 func startGRPC() {
 	// TODO: change to optionally use env var
-	sAddress := "localhost:4040"
-	conn, e := grpc.Dial(
+	sAddress := os.Getenv("URLSHORT_ADDR")
+	if sAddress == "" {
+		sAddress = "localhost:4040"
+	}
+	conn, err := grpc.Dial(
 		sAddress,
 		grpc.WithInsecure(),
 	)
@@ -81,8 +75,8 @@ func startGRPC() {
 	//grpc.FailOnNonTempDialError(true),
 	//gr	grpc.WithBlock(),
 	//gr)
-	if e != nil {
-		log.Fatalf("Failed to connect to server %v", e)
+	if err != nil {
+		log.Fatalf("Failed to connect to server %v", err)
 	}
 	// makes passing the connection fail so it's commented out for now
 	//defer conn.Close()
@@ -93,6 +87,12 @@ func startGRPC() {
 }
 
 func startHTTP() {
+	port := os.Getenv("PORT")
+	if os.Getenv("PORT") == "" {
+		port = "8080"
+	}
+	port = ":" + port
+
 	repo := chooseRepo()
 
 	service := paste.NewPasteService(repo)
@@ -109,8 +109,8 @@ func startHTTP() {
 
 	errs := make(chan error, 2)
 	go func() {
-		fmt.Printf("Listening on port %s\n", httpPort())
-		errs <- http.ListenAndServe(httpPort(), r)
+		fmt.Printf("Listening on port %s\n", port)
+		errs <- http.ListenAndServe(port, r)
 
 	}()
 
