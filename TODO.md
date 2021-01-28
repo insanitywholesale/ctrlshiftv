@@ -9,3 +9,4 @@
 - rethinkdb repository option
 - write "frontend"
 - write tests
+- replace quicktest.go with actual test
