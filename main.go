@@ -42,7 +42,7 @@ func chooseRepo() paste.PasteRepo {
 			postgresDB := "test"
 			postgresDB = os.Getenv("POSTGRES_DB")
 			// Switch to using the above at some point
-			postgresConnStr := fmt.Sprintf("postgres://%d:%d@%d/%d?sslmode=disable", postgresUser, postgresPassword, postgresHost, postgresDB)
+			postgresConnStr := "postgres://"+postgresUser+":"+postgresPassword+"@"+postgresHost+"/"+postgresDB+"?sslmode=disable"
 			postgresURI = postgresConnStr
 			log.Println("postgresURI:", postgresURI)
 		}
