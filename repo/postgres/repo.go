@@ -8,10 +8,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO: implement Find and Store
-// TODO: add "create table if not exists"
-// TODO: check about using pgx instead of pq
-
 type postgresRepo struct {
 	client   *sql.DB
 	database string
